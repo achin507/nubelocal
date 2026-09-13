@@ -91,3 +91,127 @@ La app no bloquea extensiones de programacion: puedes subir proyectos Node, Reac
 ## Seguridad
 
 La app usa clave local, cookie HTTP-only, bloqueo de rutas fuera de `storage/`, límite de tamaño por archivo y límite de subidas simultáneas.
+
+## Usar Android como servidor con Termux
+
+También puedes ejecutar Nube LAN Pro en un celular Android sin root. Termux funciona como una terminal Linux dentro del teléfono.
+
+### 1. Instalar Termux
+
+Instala Termux desde F-Droid:
+
+<https://f-droid.org/packages/com.termux/>
+
+No uses la versión antigua de Google Play.
+
+### 2. Preparar Termux
+
+Abre Termux y ejecuta:
+
+```bash
+pkg update && pkg upgrade
+pkg install git golang nodejs openssl
+termux-setup-storage
+```
+
+Acepta el permiso de almacenamiento cuando Android lo solicite.
+
+### 3. Descargar el proyecto
+
+```bash
+cd ~
+git clone https://github.com/achin507/nubelocal.git
+cd nubelocal
+```
+
+La carpeta del proyecto queda en:
+
+```text
+~/nubelocal
+```
+
+El archivo de configuración queda en:
+
+```text
+~/nubelocal/.env
+```
+
+### 4. Compilar la interfaz
+
+```bash
+cd ~/nubelocal/web
+npm install
+npm run build
+cd ~/nubelocal
+```
+
+### 5. Configurar la clave
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Cambia esta línea por tu clave:
+
+```env
+APP_PASSWORD=cambia-esta-clave
+```
+
+Para permitir dispositivos de cualquier rango local, deja esta opción vacía:
+
+```env
+ALLOWED_LAN_PREFIX=
+```
+
+Si tu red usa direcciones `192.168.0.x`, también puedes restringirla así:
+
+```env
+ALLOWED_LAN_PREFIX=192.168.0.
+```
+
+En `nano`, guarda con `CTRL + O`, presiona Enter y sal con `CTRL + X`.
+
+### 6. Iniciar el servidor
+
+```bash
+cd ~/nubelocal
+go run ./cmd/server
+```
+
+Mantén Termux abierto mientras el celular funcione como servidor.
+
+### 7. Encontrar la IP del celular
+
+En otra sesión de Termux ejecuta:
+
+```bash
+ip -4 addr show wlan0
+```
+
+Busca una dirección parecida a `192.168.0.15`. Desde otra PC o celular conectado al mismo Wi-Fi abre:
+
+```text
+https://192.168.0.15:8443/transferencia
+```
+
+Reemplaza `192.168.0.15` por la IP real del teléfono. Acepta la advertencia del certificado local y escribe la clave configurada.
+
+### 8. Evitar que Android cierre Termux
+
+Opcionalmente instala Termux:API desde F-Droid y ejecuta:
+
+```bash
+pkg install termux-api
+termux-wake-lock
+```
+
+También desactiva la optimización de batería para Termux en los ajustes de Android. Para detener el servidor presiona `CTRL + C` en la ventana donde está ejecutándose.
+
+Los archivos se guardan en:
+
+```text
+~/nubelocal/storage
+```
+
+La ruta `~/storage/shared` corresponde al almacenamiento compartido visible para Android después de ejecutar `termux-setup-storage`.
