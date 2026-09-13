@@ -1,0 +1,13 @@
+/.env
+/storage/
+/data/
+/certs/
+/web/node_modules/
+/web/dist/
+/web/*.tsbuildinfo
+/.tools/
+/runtime/*.log
+/runtime/*.pid
+/runtime/*.exe
+/runtime/go-cache/
+/server.exe
